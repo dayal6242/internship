@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wall Visualization</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        label {
+            display: inline-block;
+            width: 150px;
+            margin-bottom: 5px;
+        }
+
+        input[type="number"],
+        input[type="text"] {
+            width: 200px;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        canvas {
+            border: 1px solid #ccc;
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Wall Visualization</h1>
+    <label for="numWalls">Number of Walls:</label>
+    <input type="number" id="numWalls" min="1">
+    <br>
+    <label for="wallHeights">Height of Walls:</label>
+    <input type="text" id="wallHeights">
+    <br>
+    <button onclick="visualizeWalls()">Visualize</button>
+    <hr>
+    <canvas id="wallCanvas" width="500" height="300"></canvas>
+
+    <script>
+        function visualizeWalls() {
+    var numWallsInput = document.getElementById("numWalls");
+    var wallHeightsInput = document.getElementById("wallHeights");
+
+    var numWalls = parseInt(numWallsInput.value);
+    var wallHeights = wallHeightsInput.value.split("#").map(Number);
+
+    var canvas = document.getElementById("wallCanvas");
+    var ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear previous visualization
+
+    var wallWidth = 50; // Width of each wall segment
+    var wallSpacing = 20; // Spacing between walls
+    var maxWallHeight = Math.max(...wallHeights); // Find the maximum wall height
+
+    for (var i = 0; i < numWalls; i++) {
+        var x = i * (wallWidth + wallSpacing) + wallSpacing; // Calculate x-coordinate for each wall
+        var wallHeight = wallHeights[i] || 0; // Handle case where there are fewer heights provided
+
+        // Draw wall
+        ctx.fillStyle = "gray";
+        ctx.fillRect(x, canvas.height - wallHeight * 10, wallWidth, wallHeight * 10);
+    }
+
+    // Display the number of visible walls
+    var visibleLeft = 1;
+    var maxLeftHeight = wallHeights[0];
+    var visibleRight = 1;
+    var maxRightHeight = wallHeights[numWalls - 1];
+
+    for (var j = 1; j < numWalls; j++) {
+        if (wallHeights[j] > maxLeftHeight) {
+            visibleLeft++;
+            maxLeftHeight = wallHeights[j];
+        }
+    }
+
+    for (var k = numWalls - 2; k >= 0; k--) {
+        if (wallHeights[k] > maxRightHeight) {
+            visibleRight++;
+            maxRightHeight = wallHeights[k];
+        }
+    }
+
+    ctx.fillStyle = "black";
+    ctx.font = "16px Arial";
+    ctx.fillText("Number of walls visible from the left: " + visibleLeft, 10, 20);
+    ctx.fillText("Number of walls visible from the right: " + visibleRight, 10, 40);
+}
+    </script>
+</body>
+</html>
